@@ -172,7 +172,7 @@ public class TextureMovieEncoder implements Runnable {
     private void handleFrameAvailable(float[] transform, long timestampNanos) {
         mVideoEncoder.drainEncoder(false);
         mFullScreen.drawFrame(mTextureId, transform);
-        drawWaterMark();
+        drawWatermark();
         mInputWindowSurface.setPresentationTime(timestampNanos);
         mInputWindowSurface.swapBuffers();
     }
@@ -214,14 +214,16 @@ public class TextureMovieEncoder implements Runnable {
         }
     }
 
-    private void drawWaterMark() {
+    private void drawWatermark() {
         int size = 100;
+        int offset = 0;
         if ((++mFrameCount & PULSE_RATE) == 0) {
             size = 120;
+            offset = 5;
         }
         final int width = mInputWindowSurface.getWidth();
         GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
-        GLES20.glScissor(width - 150, 50, size, size);
+        GLES20.glScissor(width - 150 - offset, 50 - offset, size, size);
         GLES20.glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
