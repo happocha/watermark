@@ -31,42 +31,43 @@ class MainCameraImpl(
         setUp()
     }
 
-    override fun startPreview(surfaceTexture: SurfaceTexture?, width: Int, height: Int) = runOnCameraThread {
-            try {
-                val previewRequestBuilder: CaptureRequest.Builder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_RECORD)!!
-                surfaceTexture?.setDefaultBufferSize(height, width)
-                val previewSurface = Surface(surfaceTexture)
-                previewRequestBuilder.addTarget(previewSurface)
-                @Suppress("DEPRECATION")
-                cameraDevice?.createCaptureSession(
-                    listOf(previewSurface),
-                    object : CameraCaptureSession.StateCallback() {
-                        override fun onConfigured(session: CameraCaptureSession) {
-                            try {
-                                previewRequestBuilder.set(
-                                    CaptureRequest.CONTROL_AF_MODE,
-                                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
-                                )
-                                val previewRequest = previewRequestBuilder.build()
-                                session.setRepeatingRequest(
-                                    previewRequest,
-                                    null,
-                                    cameraHandler
-                                )
-                            } catch (e: CameraAccessException) {
-                                e.printStackTrace()
-                            }
+    override fun startPreview(surfaceTexture: SurfaceTexture?, width: Int, height: Int) {
+        try {
+            val previewRequestBuilder: CaptureRequest.Builder =
+                cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_RECORD)!!
+            surfaceTexture?.setDefaultBufferSize(height, width)
+            val previewSurface = Surface(surfaceTexture)
+            previewRequestBuilder.addTarget(previewSurface)
+            @Suppress("DEPRECATION")
+            cameraDevice?.createCaptureSession(
+                listOf(previewSurface),
+                object : CameraCaptureSession.StateCallback() {
+                    override fun onConfigured(session: CameraCaptureSession) {
+                        try {
+                            previewRequestBuilder.set(
+                                CaptureRequest.CONTROL_AF_MODE,
+                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
+                            )
+                            val previewRequest = previewRequestBuilder.build()
+                            session.setRepeatingRequest(
+                                previewRequest,
+                                null,
+                                cameraHandler
+                            )
+                        } catch (e: CameraAccessException) {
+                            e.printStackTrace()
                         }
+                    }
 
-                        override fun onConfigureFailed(session: CameraCaptureSession) {
-                            context.showToast("camera configure failed")
-                        }
-                    }, cameraHandler
-                )
-            } catch (e: CameraAccessException) {
-                e.printStackTrace()
-            }
+                    override fun onConfigureFailed(session: CameraCaptureSession) {
+                        context.showToast("camera configure failed")
+                    }
+                }, cameraHandler
+            )
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
         }
+    }
 
     override fun stop() {
         cameraDevice?.close()
@@ -76,7 +77,7 @@ class MainCameraImpl(
         cameraHandlerThread.quitSafely()
     }
 
-    private fun setUp() = runOnCameraThread {
+    private fun setUp() {
         cameraManager = context.systemCameraManager
         cameraManager?.let {
             val allIds: Array<String> = it.cameraIdList
@@ -92,7 +93,7 @@ class MainCameraImpl(
     }
 
     @SuppressLint("MissingPermission")
-    private fun openCamera(id: String) = runOnCameraThread {
+    private fun openCamera(id: String) {
         cameraManager?.openCamera(id, object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
                 cameraDevice = camera
@@ -106,9 +107,5 @@ class MainCameraImpl(
                 camera.close()
             }
         }, null)
-    }
-
-    private fun runOnCameraThread(r: Runnable) {
-        cameraHandler?.post(r)
     }
 }

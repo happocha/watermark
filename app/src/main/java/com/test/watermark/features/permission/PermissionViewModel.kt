@@ -10,7 +10,6 @@ import com.test.watermark.features.main.MainScreen
 
 interface PermissionViewModel {
     val showDialogMessage: LiveData<String>
-    val setupCamera: LiveData<Unit>
 
     fun onBackPressed()
     fun permissionUpdated(permission: Boolean)
@@ -22,7 +21,6 @@ class PermissionViewModelImpl(
 ) : PermissionViewModel, ViewModel() {
 
     override val showDialogMessage = SingleLiveEvent<String>()
-    override val setupCamera = SingleLiveEvent<Unit>()
 
     override fun onBackPressed() {
         router.exit()

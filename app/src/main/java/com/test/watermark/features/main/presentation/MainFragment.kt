@@ -2,6 +2,7 @@ package com.test.watermark.features.main.presentation
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.MotionEvent
@@ -35,9 +36,9 @@ class MainFragment : BaseFragment() {
 
     private val viewModel: MainViewModel by lazy(LazyThreadSafetyMode.NONE) { provideMainViewModel() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        camera = MainCameraImpl(requireContext())
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        camera = MainCameraImpl(context)
     }
 
     @SuppressLint("ClickableViewAccessibility")
