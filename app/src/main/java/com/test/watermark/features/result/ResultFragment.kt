@@ -24,19 +24,12 @@ class ResultFragment : BaseFragment() {
         binding.videoViewResult.apply {
             setMediaController(mediaController)
             setVideoPath("${requireContext().filesDir}/$FILE_NAME")
+            start()
         }
         binding.ivBackResult.setOnClickListener { viewModel.onBackPressed() }
-        initObservers()
-        viewModel.init()
     }
 
     override fun onBackPressed() {
         viewModel.onBackPressed()
-    }
-
-    private fun initObservers() {
-        viewModel.playVideo.observe(viewLifecycleOwner) {
-            binding.videoViewResult.start()
-        }
     }
 }
