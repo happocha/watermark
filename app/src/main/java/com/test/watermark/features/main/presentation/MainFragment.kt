@@ -35,16 +35,15 @@ class MainFragment : BaseFragment() {
 
     private val viewModel: MainViewModel by lazy(LazyThreadSafetyMode.NONE) { provideMainViewModel() }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding = FragmentMainBinding.bind(view)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         camera = MainCameraImpl(requireContext())
-        initObservers()
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentMainBinding.bind(view)
         mainRenderer = MainRenderer(
             context = requireContext(),
             camera = camera,
@@ -64,23 +63,32 @@ class MainFragment : BaseFragment() {
                 true
             }
         }
+        initObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
         recordingAnimator.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.glSurfaceViewMain.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.glSurfaceViewMain.onPause()
     }
 
     override fun onStop() {
         super.onStop()
         recordingAnimator.cancel()
         binding.glSurfaceViewMain.queueEvent { mainRenderer.stop() }
-        camera.stop()
     }
 
     override fun onBackPressed() {
         viewModel.onBackPressed()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        camera.stop()
     }
 
     private fun initObservers() {
